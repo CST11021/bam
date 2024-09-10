@@ -1,0 +1,6 @@
+
+{title: '操作', fixed: 'right', width: 140, align: 'center', templet: '<button class="layui-btn layui-btn-xs more-dropdown" lay-event="more">更多 <i class="layui-edge layui-edge-bottom" style="border-top-color: white;"></i></button>'}
+
+
+layer.msg('查看操作，当前行 ID:' + rowData.orgId, {offset: 'auto'});
+

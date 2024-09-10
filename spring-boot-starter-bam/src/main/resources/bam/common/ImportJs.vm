@@ -1,0 +1,23 @@
+## 三方依赖
+##<link href="//cdn.staticfile.org/layui/2.9.6/css/layui.css" rel="stylesheet">
+##<script src="//cdn.staticfile.org/layui/2.9.6/layui.js"></script>
+<link href="/bam/static/depend/layui/v2.9.6/layui/css/layui.css" rel="stylesheet">
+<script src="/bam/static/depend/layui/v2.9.6/layui/layui.js"></script>
+<script src="/bam/static/depend/jquery/v2.1.4/jquery.min.js"></script>
+
+## 框架工具
+<script src="/bam/static/framework/js/tool/AjaxUtils.js"></script>
+<script src="/bam/static/framework/js/tool/DomUtils.js"></script>
+<script src="/bam/static/framework/js/tool/DateUtils.js"></script>
+<script src="/bam/static/framework/js/tool/StringUtils.js"></script>
+<script src="/bam/static/framework/js/tool/NumberUtils.js"></script>
+<script src="/bam/static/framework/js/tool/JsonUtils.js"></script>
+<script src="/bam/static/framework/js/tool/ObjectUtils.js"></script>
+
+## layui组件
+<script src="/bam/static/framework/js/layui/LayerHelper.js"></script>
+<script src="/bam/static/framework/js/layui/TableHelper.js"></script>
+
+<script>
+
+</script>

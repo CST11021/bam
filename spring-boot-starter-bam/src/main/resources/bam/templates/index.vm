@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>后台管理</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    #parse("/bam/common/Import.vm")
+
+</head>
+<body>
+
+<div class="layui-layout layui-layout-admin">
+
+    ## 顶部导航栏
+    <div class="layui-header">
+        ## 左上角
+        <div class="layui-logo layui-hide-xs layui-bg-black">BAM</div>
+
+        <!-- 水平导航栏 -->
+        ##<ul class="layui-nav layui-layout-left">
+        ##    <!-- 移动端显示 -->
+        ##    <li class="layui-nav-item layui-show-xs-inline-block layui-hide-sm" lay-header-event="menuLeft">
+        ##        <i class="layui-icon layui-icon-spread-left"></i>
+        ##    </li>
+        ##
+        ##    <li class="layui-nav-item layui-hide-xs"><a class="menu-item" href="javascript:;">预算</a></li>
+        ##    <li class="layui-nav-item layui-hide-xs"><a class="menu-item" href="javascript:;">支付</a></li>
+        ##    <li class="layui-nav-item layui-hide-xs"><a class="menu-item" href="javascript:;">电子档案</a></li>
+        ##    <li class="layui-nav-item">
+        ##        <a class="menu-item" href="javascript:;">百搭</a>
+        ##        <dl class="layui-nav-child">
+        ##            <dd><a class="menu-item" href="javascript:;">menu 11</a></dd>
+        ##            <dd><a class="menu-item" href="javascript:;">menu 22</a></dd>
+        ##            <dd><a class="menu-item" href="javascript:;">menu 33</a></dd>
+        ##        </dl>
+        ##    </li>
+        ##    <li class="layui-nav-item layui-hide-xs"><a class="menu-item" href="/bam/menu/layui-demo/table" target="manager">测试Table</a></li>
+        ##</ul>
+        ## 用户栏、右侧抽屉
+        <ul class="layui-nav layui-layout-right">
+
+            ## 用户
+            <li class="layui-nav-item layui-hide layui-show-sm-inline-block">
+                <a href="javascript:;">
+                    ##<img src="//unpkg.com/outeres@0.0.10/img/layui/icon-v2.png" class="layui-nav-img">
+                    <img src="/bam/static/framework/img/iverson.gif" class="layui-nav-img">
+                    tester
+                </a>
+                <dl class="layui-nav-child">
+                    <dd><a class="menu-item" href="javascript:;">Your Profile</a></dd>
+                    <dd><a class="menu-item" href="javascript:;">Settings</a></dd>
+                    <dd><a class="menu-item" href="javascript:;">Sign out</a></dd>
+                </dl>
+            </li>
+
+            ## 右侧抽屉的更多标识
+            <li class="layui-nav-item" lay-header-event="menuRight" lay-unselect>
+                <a href="javascript:;">
+                    <i class="layui-icon layui-icon-more-vertical"></i>
+                </a>
+            </li>
+
+        </ul>
+    </div>
+
+    ## 左侧导航区域
+    <div class="layui-side layui-bg-black">
+        <div class="layui-side-scroll">
+            <ul class="layui-nav layui-nav-tree" lay-filter="test">
+
+                #foreach($menu in $menuList)
+
+                    ## !$menu.childMenus 表示值为null
+                    #{if} (!$menu.childMenus || $menu.childMenus.isEmpty())
+                        ## 默认选中class添加: layui-this
+                        <li class="layui-nav-item"><a class="menu-item #{if} ($targetCode == $menu.code)layui-this#{end}" href="$menu.uri" target="manager">$menu.name</a></li>
+                    #{else}
+                        ## 默认展开class添加: layui-nav-itemed
+                        <li class="layui-nav-item">
+                            <a class="menu-item" href="javascript:;">$menu.name</a>
+                            <dl class="layui-nav-child">
+
+                                #foreach($childMenu in $menu.childMenus)
+                                    <dd><a class="menu-item #{if} ($targetCode == $menu.code)layui-this#{end}" href="$childMenu.uri" target="manager">$childMenu.name</a></dd>
+                                #end
+
+                            </dl>
+                        </li>
+                    #{end}
+
+                #end
+
+##                #set($menuList = [
+##                    {"uri": "/bam/menu/budget/budgetInfoList", "name": "预算指标"},
+##                    {"uri": "/bam/menu/budget/budgetInfoLogList", "name": "预算指标日志"},
+##                    {"uri": "/bam/menu/budget/budgetProjectList", "name": "预算项目"}
+##                ])
+##                #foreach($menu in $menuList)
+##                    <li class="layui-nav-item"><a class="menu-item" href="$menu.uri" target="manager">$menu.name</a></li>
+##                #end
+
+                ##<li class="layui-nav-item"><a class="menu-item" href="/bam/menu/budget/budgetInfoList" target="manager">预算指标</a></li>
+                ##<li class="layui-nav-item"><a class="menu-item" href="/bam/menu/budget/budgetInfoLogList" target="manager">预算指标日志</a></li>
+                ##<li class="layui-nav-item"><a class="menu-item" href="/bam/menu/budget/budgetProjectList" target="manager">预算项目</a></li>
+                <li class="layui-nav-item layui-nav-itemed">
+                    <a class="menu-item"  href="javascript:;">metabase</a>
+                    <dl class="layui-nav-child">
+                        <dd><a class="menu-item" href="http://metabase.zlb-prod.cai-inc.com/question/188?year=2024&districtCode=330000&budgetDetailId=241253290001" target="manager">预算指标</a></dd>
+                        <dd><a class="menu-item" href="javascript:;">menu 2</a></dd>
+                        <dd><a class="menu-item" href="javascript:;">menu 3</a></dd>
+                        <dd><a class="menu-item" href="javascript:;">the links</a></dd>
+                    </dl>
+                </li>
+                <li class="layui-nav-item">
+                    <a class="menu-item" href="javascript:;">单据查询</a>
+                    <dl class="layui-nav-child">
+                        <dd><a href="javascript:;">报销单</a></dd>
+                        <dd><a href="javascript:;">申请单</a></dd>
+                        <dd><a href="javascript:;">通用单据</a></dd>
+                    </dl>
+                </li>
+                <li class="layui-nav-item"><a class="menu-item" href="javascript:;">测试</a></li>
+                <li class="layui-nav-item"><a class="menu-item" href="javascript:;">其他</a></li>
+            </ul>
+        </div>
+    </div>
+
+    ## 内容主体区域
+    <div class="layui-body">
+
+        <div style="padding: 15px;">
+            <iframe id="content" name="manager" src="$targetUrl" style="overflow:visible;" scrolling="yes" frameborder="no" width="100%" onload="changeFrameHeight()" #*height="600px"*#></iframe>
+            ##<blockquote class="layui-elem-quote layui-text">
+            ##    Layui 框体布局内容主体区域
+            ##</blockquote>
+            ##<div class="layui-card layui-panel">
+            ##    <div class="layui-card-header">
+            ##        下面是充数内容，为的是出现滚动条
+            ##    </div>
+            ##    <div class="layui-card-body">
+            ##        充数内容<br>充数内容<br>充数内容<br>充数内容<br>充数内容<br>充数内容<br>充数内容<br>充数内容<br>充数内容<br>充数内容<br>充数内容<br>充数内容<br>充数内容<br>充数内容<br>充数内容<br>充数内容<br>充数内容<br>充数内容<br>充数内容<br>充数内容<br>充数内容<br>充数内容<br>充数内容<br>充数内容<br>充数内容<br>充数内容<br>充数内容<br>充数内容<br>充数内容<br>充数内容<br>充数内容<br>充数内容<br>充数内容<br>充数内容<br>充数内容<br>充数内容<br>充数内容<br>充数内容<br>充数内容<br>充数内容<br>充数内容<br>充数内容<br>充数内容<br>充数内容<br>充数内容<br>充数内容<br>充数内容<br>充数内容<br>充数内容<br>充数内容<br>你还真滑到了底部呀
+            ##    </div>
+            ##</div>
+            ##<br><br>
+        </div>
+
+    </div>
+
+    ## 底部固定区域
+    <div class="layui-footer">
+        底部固定区域
+    </div>
+
+</div>
+
+<script>
+
+    // 自适应高度
+    function changeFrameHeight() {
+        // console.log(document.documentElement.clientHeight);
+        document.getElementById("content").height = document.documentElement.clientHeight - 100;
+    }
+
+    // 切换菜单
+    // $(".menu-item").click(function() {
+    //
+    //     var url = this.getAttribute("href");
+    //     $.get(url, function(data, status) {
+    //
+    //         console.log("切换菜单" + url);
+    //         // DomUtils.setHtml(DomUtils.getElementById("content"), this.getAttribute("href"));
+    //         // DomUtils.setHtml(DomUtils.getElementById("currentPage"), data);
+    //
+    //     });
+    //
+    //     return false;
+    // });
+
+    //头部事件
+    layui.util.event('lay-header-event', {
+
+        // 左侧菜单事件
+        menuLeft: function(othis){
+            layer.msg('展开左侧菜单的操作', {icon: 0});
+        },
+
+        // 右侧菜单事件
+        menuRight: function(){
+
+            console.log("右侧菜单事件");
+
+            layer.open({
+                type: 1,
+                title: '更多',
+                content: '<div style="padding: 15px;">处理右侧面板的操作</div>',
+                area: ['260px', '100%'],
+                offset: 'rt', // 右上角
+                anim: 'slideLeft', // 从右侧抽屉滑出
+                shadeClose: true,
+                scrollbar: false
+            });
+        }
+
+    });
+
+</script>
+
+</body>
+</html>

@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <title></title>
+    #parse("/bam/common/Import.vm")
+    <script src="/bam/static/js/RequestUri.js"></script>
+
+</head>
+<body>
+
+<form class="layui-form" lay-filter="query-filter">
+
+    <div class="layui-row">
+
+        <div class="layui-col-md3">
+            <div class="layui-form-item">
+                <input type="text" name="financialDistrictCode" #{if}($financialDistrictCode)) value="$financialDistrictCode" #{end} placeholder="区划编码" class="layui-input">
+            </div>
+        </div>
+        <div class="layui-col-md3">
+            <div class="layui-form-item">
+                <input type="text" name="orgCode" #{if}($orgCode)) value="$orgCode" #{end} placeholder="单位编码" class="layui-input">
+            </div>
+        </div>
+        <div class="layui-col-md3">
+            <div class="layui-form-item">
+                <input type="text" name="pcode" #{if}($pcode)) value="$pcode" #{end} placeholder="项目编码" class="layui-input">
+            </div>
+        </div>
+        <div class="layui-col-md3">
+            <div class="layui-form-item">
+                <button id="btn_id_query" type="button" class="layui-btn" onclick="layui.table.reloadData('table1', {});">查询</button>
+            </div>
+        </div>
+
+    </div>
+
+</form>
+<table id="table"></table>
+
+<script>
+
+    // 渲染表格
+    layui.table.render(JsonUtils.merge(TableHelper.commonTableOptions(), {
+        id: 'table1'
+        , elem: '#table' //指定原始表格元素选择器（推荐id选择器）
+        , url: INVOKE_PAGE_BUDGET_PROJECT
+        , method: 'post'
+        , before: function(options){
+            options.where = ObjectUtils.trimToNull(layui.form.val('query-filter')); // 修改或额外追加 where 属性
+        }
+        , cols: [[
+            {
+                title: '序号', width: 50, fixed: 'left', templet: function (rowData) {
+                    return rowData.LAY_NUM
+                }
+            }
+            , {field: 'pcode', title: '项目编码', width: 200, fixed: 'left'}
+            , {field: 'financialDistrictCode', title: '区划编码', width: 100}
+            , {field: 'pyear', title: '年份', width: 100}
+            , {field: 'guid', title: 'Guid', width: 100}
+            , {field: 'id', title: 'ID', width: 100}
+            , {field: 'orgCode', title: '单位编码', width: 100}
+            , {field: 'isDeleted', title: '是否删除', width: 120}
+            , {field: 'isClear', title: '是否清除', width: 120}
+            , {field: 'isHistory', title: '是否历史', width: 120}
+            , {field: 'isAdjust', title: '已拆解金额', width: 120}
+            , {
+                title: '变更时间', width: 200, templet: function (rowData) {
+                    return DateUtils.formatDate(rowData.financialUpdateTime, "YYYY-MM-DD HH:ii:ss");
+                }
+            }
+            , {fixed: 'right', width: 140, align: 'center', toolbar: '#operatorBar'}
+        ]]
+    }));
+
+</script>
+<script type="text/html" id="operatorBar">
+    <div class="layui-btn-group">
+        <button type="button" class="layui-btn layui-btn-xs">查看</button>
+        <button type="button" class="layui-btn layui-btn-xs layui-bg-blue">编辑</button>
+        <button type="button" class="layui-btn layui-btn-xs layui-bg-red">删除</button>
+    </div>
+</script>
+
+</body>
+</html>

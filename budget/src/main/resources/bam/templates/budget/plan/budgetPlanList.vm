@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <title></title>
+    #parse("/bam/common/Import.vm")
+    <script src="/bam/static/js/RequestUri.js"></script>
+
+</head>
+<body>
+
+<form class="layui-form" lay-filter="query-filter">
+
+    <div class="layui-row">
+
+        <div class="layui-col-md3">
+            <div class="layui-form-item">
+                <input name="year" type="number" value="2024" placeholder="年份" class="layui-input">
+            </div>
+        </div>
+        <div class="layui-col-md3">
+            <div class="layui-form-item">
+                <input type="text" name="financialDistrictCode" placeholder="区划编码" class="layui-input">
+            </div>
+        </div>
+        <div class="layui-col-md3">
+            <div class="layui-form-item">
+                <input type="text" name="financialDistrictDetailId" placeholder="一体化指标ID" class="layui-input">
+            </div>
+        </div>
+        <div class="layui-col-md3">
+            <div class="layui-form-item">
+                <input type="text" name="financialDistrictPlanId" placeholder="一体化限额ID" class="layui-input">
+            </div>
+        </div>
+        <div class="layui-col-md3">
+            <div class="layui-form-item">
+                <input type="text" name="orgCode" placeholder="预算单位编码" class="layui-input">
+            </div>
+        </div>
+        <div class="layui-col-md3">
+            <div class="layui-form-item">
+                <input type="text" name="guid" placeholder="Guid" class="layui-input">
+            </div>
+        </div>
+        <div class="layui-col-md3">
+            <div class="layui-form-item">
+                <button id="btn_id_query" type="button" class="layui-btn" onclick="layui.table.reloadData('table1', {});">查询</button>
+            </div>
+        </div>
+
+    </div>
+
+</form>
+<table id="$default_layui_table_elem_id"></table>
+
+<script>
+
+    // 渲染表格
+    layui.table.render(JsonUtils.merge(TableHelper.commonTableOptions(), {
+        elem: '#$default_layui_table_elem_id' //指定原始表格元素选择器（推荐id选择器）
+        , url: '/bam/zlb/budget/plan/pagePlan'
+        , method: 'post'
+        , before: function(options){
+            // console.log(JsonUtils.toJson(layui.form.val('query-filter')))
+            options.where = ObjectUtils.trimToNull(layui.form.val('query-filter')); // 修改或额外追加 where 属性
+        }
+        , done: function(res, pageNo, count, origin) {
+            // res: 得到当前渲染的数据, pageNo: 得到当前页码, count: 得到数据总量, origin: 回调函数所执行的来源 --- 2.8.7+
+
+            // 触发单元格工具事件
+            layui.table.on('tool($default_layui_table_elem_id)', function (rowObject) {
+
+                var rowData = rowObject.data; // 获得当前行数据
+
+                layui.dropdown.render({
+                    elem: this,  // 触发事件的 DOM 对象
+                    show: true,  // 外部事件触发即显示
+                    // trigger: 'hover',
+                    data: [
+                        {id: 'syncOrgBudget', title: '同步预算指标'}
+                    ],
+                    click: function (item) {
+
+                        if (item.id === 'syncOrgBudget') {
+
+                        }
+
+                    },
+                });
+
+            });
+
+        }
+        , cols: [[
+            {field: 'depEconomicClassifyCode', title: '科目编码', width: 100, fixed: 'left'}
+            , {field: 'depEconomicClassifyName', title: '科目名称', width: 100, fixed: 'left'}
+            , {field: 'year', title: '年份', width: 100}
+            , {field: 'financialDistrictCode', title: '区划编码', width: 100}
+            , {field: 'financialDistrictDetailId', title: '一体化指标ID', width: 100}
+            , {field: 'orgCode', title: '预算单位编码', width: 200}
+            , {field: 'orgName', title: '预算单位名称', width: 200}
+
+            , {field: 'financialBudgetPlanId', title: '限额ID', width: 200}
+
+            , {title: '操作', fixed: 'right', width: 140, align: 'center'
+                // , toolbar: '#operatorBar'
+                , templet: '<button class="layui-btn layui-btn-xs moreDropdown" lay-event="more">操作 <i class="layui-edge layui-edge-bottom" style="border-top-color: white;"></i></button>'
+            }
+        ]]
+    }));
+
+</script>
+
+</body>
+</html>

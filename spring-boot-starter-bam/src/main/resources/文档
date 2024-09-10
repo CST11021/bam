@@ -1,0 +1,13 @@
+velocity模板判断null和空字符串方法：https://blog.csdn.net/happy_cheng/article/details/43769725
+velocity判断空和null：https://blog.csdn.net/winy_lm/article/details/52423906
+
+#foreach($menu in $menuList)
+
+    ## !$menu.childMenus 表示值为null
+    #{if} (!$menu.childMenus || $menu.childMenus.isEmpty())
+        ...
+    #{else}
+       ...
+    #{end}
+
+#end

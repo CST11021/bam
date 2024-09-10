@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <title></title>
+    #parse("/bam/common/Import.vm")
+    <script src="/bam/static/js/RequestUri.js"></script>
+
+</head>
+<body>
+
+<form class="layui-form" lay-filter="query-filter">
+
+    <div class="layui-row">
+
+        <div class="layui-col-md2">
+            <div class="layui-form-item">
+                <input name="year" type="number" value="2024" placeholder="年份" class="layui-input">
+            </div>
+        </div>
+        <div class="layui-col-md2">
+            <div class="layui-form-item">
+                <input type="text" name="financialDistrictCode" placeholder="区划编码" class="layui-input">
+            </div>
+        </div>
+        <div class="layui-col-md2">
+            <div class="layui-form-item">
+                <input type="text" name="orgCode" placeholder="单位编码" class="layui-input">
+            </div>
+        </div>
+        <div class="layui-col-md2">
+            <div class="layui-form-item">
+                <input type="text" name="financialBudgetDetailId" placeholder="一体化指标ID" class="layui-input">
+            </div>
+        </div>
+
+        <div class="layui-col-md2">
+            <div class="layui-form-item">
+                <input type="text" name="financialBudgetId" placeholder="Guid" class="layui-input">
+            </div>
+        </div>
+        <div class="layui-col-md2">
+            <div class="layui-form-item">
+                <button id="btn_id_query" type="button" class="layui-btn">查询</button>
+            </div>
+        </div>
+    </div>
+    ##<div class="layui-row">
+    ##
+    ##</div>
+
+</form>
+
+<table id="table"></table>
+
+<script>
+
+    // 渲染表格
+    layui.table.render(JsonUtils.merge(TableHelper.commonTableOptions(), {
+        id: 'table1'
+        , elem: '#table' //指定原始表格元素选择器（推荐id选择器）
+        , url: INVOKE_PAGE_BUDGET_INFO_LOG
+        , method: 'post'
+        , before: function(options){
+            options.where = ObjectUtils.trimToNull(layui.form.val('query-filter')); // 修改或额外追加 where 属性
+        }
+        , cols: [[
+            {field: 'financialBudgetDetailId', title: '一体化预算ID', width: 200, fixed: 'left'}
+            , {field: 'financialDistrictCode', title: '区划编码', width: 100}
+            , {field: 'year', title: '年份', width: 100}
+            , {field: 'financialBudgetId', title: 'GUID', width: 100}
+            , {field: 'uk', title: '主键', width: 200}
+            , {field: 'id', title: 'ID', width: 50}
+            , {field: 'orgCode', title: '单位编码', width: 100}
+            , {field: 'orgName', title: '单位名称', width: 150}
+            , {field: 'projectCode', title: '项目编码', width: 200, templet: '#projectCodeTemplet'}
+            , {field: 'totalAmount', title: '总金额', width: 120}
+            , {fixed: 'right', width: 140, align: 'center', toolbar: '#operatorBar'}
+        ]]
+    }));
+
+    $('#btn_id_query').on('click', function () {
+        layui.table.reloadData('table1', {});
+    });
+
+    // 触发单元格工具事件
+    layui.table.on('tool(table1)', function (obj) { // 双击 toolDouble
+        var data = obj.data; // 获得当前行数据
+
+        // 更多 - 下拉菜单
+        if (obj.event === 'more') {
+            layui.dropdown.render({
+                elem: this, // 触发事件的 DOM 对象
+                show: true, // 外部事件触发即显示
+                data: [
+                    {id: 'detail', title: '查看'},
+                    {id: 'del', title: '删除'}
+                ],
+                click: function (item) {
+                    if (item.id === 'detail') {
+                        layer.msg('查看操作，当前行 ID:' + data.id);
+                    } else if (item.id === 'del') {
+                        layer.confirm('真的删除行 [id: ' + data.id + '] 么', function (index) {
+                            obj.del(); // 删除对应行（tr）的DOM结构
+                            layer.close(index);
+                            // 向服务端发送删除指令
+                        });
+                    }
+                },
+                align: 'right', // 右对齐弹出
+                style: 'box-shadow: 1px 1px 10px rgb(0 0 0 / 12%);' // 设置额外样式
+            })
+        }
+
+    });
+
+    /**
+     * 更多 - 下拉菜单
+     *
+     * @param obj
+     */
+    function clickMore(obj) {
+        var data = obj.data; // 获得当前行数据
+        layui.dropdown.render({
+            elem: this, // 触发事件的 DOM 对象
+            show: true, // 外部事件触发即显示
+            data: [
+                {id: 'detail', title: '查看'},
+                {id: 'del', title: '删除'}
+            ],
+            click: function (item) {
+                if (item.id === 'detail') {
+                    layer.msg('查看操作，当前行 ID:' + data.id);
+                } else if (item.id === 'del') {
+                    layer.confirm('真的删除行 [id: ' + data.id + '] 么', function (index) {
+                        obj.del(); // 删除对应行（tr）的DOM结构
+                        layer.close(index);
+                        // 向服务端发送删除指令
+                    });
+                }
+            },
+            align: 'right', // 右对齐弹出
+            style: 'box-shadow: 1px 1px 10px rgb(0 0 0 / 12%);' // 设置额外样式
+        })
+    }
+
+</script>
+<script type="text/html" id="projectCodeTemplet">
+    <a href="/bam/menu/budget/budgetProjectList" style="color: cornflowerblue;" target="_blank">{{= d.projectCode }}</a>
+</script>
+<script type="text/html" id="operatorBar">
+    <div class="layui-btn-group">
+        <button type="button" class="layui-btn layui-btn-xs">查看</button>
+        <a class="layui-btn layui-btn-xs" lay-event="more">
+            更多
+            <i class="layui-icon layui-icon-down"></i>
+        </a>
+    </div>
+</script>
+
+</body>
+</html>

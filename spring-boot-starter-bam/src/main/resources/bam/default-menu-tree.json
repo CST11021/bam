@@ -1,0 +1,15 @@
+[
+  {"uri": "/bam/menu/org/orgList", "name": "机构单位查询", "code": "orgList"},
+  {
+    "code": "budgetInfoManager",
+    "name": "预算指标管理",
+    "childMenus": [
+      {"uri": "/bam/menu/budget/budgetInfoList", "name": "预算指标查询", "code": "budgetInfoList"},
+      {"uri": "/bam/menu/budget/budgetInfoLogList", "name": "指标日志查询", "code": "budgetInfoLogList"},
+      {"uri": "/bam/menu/budget/plan/budgetPlanClassifyList", "name": "限额分类查询", "code": "budgetPlanClassifyList"},
+      {"uri": "/bam/menu/budget/plan/budgetPlanList", "name": "限额月份查询", "code": "budgetPlanList"},
+      {"uri": "/bam/menu/budget/plan/budgetPlanLogList", "name": "限额日志查询", "code": "budgetPlanLogList"},
+      {"uri": "/bam/menu/budget/budgetProjectList", "name": "预算项目查询", "code": "budgetProjectList"}
+    ]
+  }
+]

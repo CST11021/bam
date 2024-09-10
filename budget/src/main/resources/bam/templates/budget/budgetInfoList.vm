@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <title></title>
+    #parse("/bam/common/Import.vm")
+    <script src="/bam/static/js/RequestUri.js"></script>
+
+</head>
+<body>
+
+<form class="layui-form" lay-filter="query-filter">
+
+    <div class="layui-row">
+
+        <div class="layui-col-md3">
+            <div class="layui-form-item">
+                <input id="input_id_year" name="year" type="number" value="2024" placeholder="年份" class="layui-input">
+            </div>
+        </div>
+        <div class="layui-col-md3">
+            <div class="layui-form-item">
+                <input id="input_id_financialDistrictCode" type="text" name="financialDistrictCode" placeholder="区划编码" class="layui-input">
+            </div>
+        </div>
+        <div class="layui-col-md3">
+            <div class="layui-form-item">
+                <input id="input_id_orgCode" type="text" name="orgCode" placeholder="单位编码" class="layui-input">
+            </div>
+        </div>
+        <div class="layui-col-md3">
+            <div class="layui-form-item">
+                <input id="input_id_financialBudgetDetailId" type="text" name="financialBudgetDetailId" placeholder="一体化指标ID" class="layui-input">
+            </div>
+        </div>
+        <div class="layui-col-md3">
+            <div class="layui-form-item">
+                <input id="input_id_financialBudgetId" type="text" name="financialBudgetId" placeholder="Guid" class="layui-input">
+            </div>
+        </div>
+
+        <div class="layui-col-md3">
+            <div class="layui-form-item">
+                <button id="btn_id_query" type="button" class="layui-btn">查询</button>
+            </div>
+        </div>
+
+    </div>
+
+</form>
+
+<table id="budgetInfoTable"></table>
+
+<script>
+
+    // 渲染表格
+    layui.table.render(JsonUtils.merge(TableHelper.commonTableOptions(), {
+        id: 'table1'
+        , elem: '#budgetInfoTable' // 指定原始表格元素选择器（推荐id选择器）
+        , url: INVOKE_PAGE_BUDGET_INFO
+        , method: 'post'
+        , before: function(options) {
+            options.where = ObjectUtils.trimToNull(layui.form.val('query-filter')); // 修改或额外追加 where 属性
+            options.where.financialBudgetIdList = StringUtils.toArrayIfNotNull(StringUtils.trimToNull(options.where.financialBudgetId))
+            options.where.financialBudgetId = null;
+        }
+        , done: function(res, pageNo, count, origin) {
+            // 触发单元格工具事件
+            layui.table.on('tool(table1)', function (rowObject) {
+
+            });
+
+            // 触发单元格工具事件
+            layui.table.on('tool(table1)', function (rowObject) {
+
+                var rowData = rowObject.data; // 获得当前行数据
+
+                if(rowObject.event === 'syncBudgetInfoLog') {
+                    LayerHelper.iframe('预算指标同步日志', "/bam/menu/budget/budgetInfoLogList?financialDistrictCode"
+                            + "?year=" + rowObject.year
+                            + "&financialDistrictCode=" + rowObject.financialDistrictCode
+                            + "&orgCode=" + rowObject.orgCode
+                            + "&financialBudgetDetailId=" + rowObject.financialBudgetDetailId
+                            + "&financialBudgetId=" + rowObject.financialBudgetId, ['1000px', '500px']);
+                } else if (rowObject.event === 'more') {
+                    layui.dropdown.render({
+                        elem: this,  // 触发事件的 DOM 对象
+                        show: true,  // 外部事件触发即显示
+                        // trigger: 'hover',
+                        data: [
+                            {id: 'reSyncBudgetInfo', title: '重新同步'}
+                        ],
+                        click: function (item) {
+
+                            if (item.id === 'reSyncBudgetInfo') {
+
+                                AjaxUtils.ajax({
+                                    type: "POST",
+                                    url: invoke_bam_zlb_info_reSyncByBudget,
+                                    contentType: "application/json",
+                                    dataType: "json",
+                                    data: JsonUtils.toJson({
+                                        year: rowData.orgYear,
+                                        financialDistrictCode: rowData.financialDistrictCode,
+                                        orgCode: rowData.orgCode
+                                    }),
+                                    success: function (response) {
+                                        if (response == null) {
+                                            layer.msg("服务未响应");
+                                            return;
+                                        } else if (!response.success) {
+                                            layer.msg("服务响应异常：" + response.message);
+                                            return;
+                                        }
+
+                                        // 重置表格数据
+                                        layui.table.reloadData('table1', {});
+                                    },
+                                    error: function (thrownError) {
+                                        layer.msg("thrownError：" + thrownError);
+                                    }
+                                });
+
+                            }
+
+                        },
+                    });
+                }
+            });
+
+        }
+        , cols: [[
+            // {checkbox: true, fixed: true}
+            {field: 'financialBudgetDetailId', title: '一体化预算ID', width: 200, fixed: 'left'}
+            , {field: 'financialDistrictCode', title: '区划编码', width: 100}
+            , {field: 'year', title: '年份', width: 100}
+            , {field: 'financialBudgetId', title: 'GUID', width: 100}
+            , {field: 'uk', title: '主键', width: 200}
+            , {field: 'id', title: 'ID', width: 50}
+            , {field: 'orgCode', title: '单位编码', width: 100}
+            , {field: 'orgName', title: '单位名称', width: 150}
+            , {field: 'projectCode', title: '项目编码', width: 200, templet: '#projectCodeTemplet'}
+            , {field: 'totalAmount', title: '总金额', width: 120}
+            , {field: 'usedAmount', title: '已使用金额', width: 120}
+            , {field: 'frozenAmount', title: '冻结金额', width: 120}
+            , {field: 'splitAmount', title: '已拆解金额', width: 120}
+            , {field: 'availableAmount', title: '可用金额', width: 120}
+            , {fixed: 'right', width: 140, align: 'center', toolbar: '#operatorBar'}
+        ]]
+    }));
+
+    $('#btn_id_query').on('click', function () {
+        layui.table.reloadData('table1', {
+            where: {
+                year: $("#input_id_year").val()
+                , financialDistrictCode: StringUtils.trimToNull($("#input_id_financialDistrictCode").val())
+                , orgCode: StringUtils.trimToNull($("#input_id_orgCode").val())
+                , financialBudgetDetailId: StringUtils.trimToNull($("#input_id_financialBudgetDetailId").val())
+                , financialBudgetIdList: StringUtils.toArrayIfNotNull(StringUtils.trimToNull($("#input_id_financialBudgetId").val()))
+            }
+        });
+    });
+
+</script>
+<script type="text/html" id="projectCodeTemplet">
+    <a href="/bam/menu/budget/budgetProjectList?financialDistrictCode={{=d.financialDistrictCode}}&orgCode={{=d.orgCode}}&pcode={{=d.projectCode}}" style="color: cornflowerblue;" target="_blank">{{= d.projectCode }}</a>
+</script>
+<script type="text/html" id="operatorBar">
+    ##<div class="layui-clear-space">
+    ##    <a class="layui-btn layui-btn-xs" lay-event="detail">查看</a>
+    ##    <a class="layui-btn layui-btn-xs layui-bg-blue" lay-event="edit">编辑</a>
+    ##    <a class="layui-btn layui-btn-xs layui-bg-red" lay-event="del">删除</a>
+    ##</div>
+
+    ##<div class="layui-btn-container">
+    ##    <button class="layui-btn layui-btn-xs" lay-event="footerDemoBtn1">查看</button>
+    ##    <button class="layui-btn layui-btn-xs layui-bg-blue" lay-event="footerDemoBtn2">编辑</button>
+    ##    <button class="layui-btn layui-btn-xs layui-bg-red" lay-event="footerDemoBtn2">删除</button>
+    ##</div>
+
+    ##<div class="layui-btn-container">
+    ##    <button type="button" class="layui-btn layui-btn-xs">按钮一</button>
+    ##    <button type="button" class="layui-btn layui-btn-xs">按钮二</button>
+    ##    <button type="button" class="layui-btn layui-btn-xs">按钮三</button>
+    ##</div>
+
+    <div class="layui-btn-group">
+        ##<button type="button" class="layui-btn layui-btn-xs">查看</button>
+        ##<button type="button" class="layui-btn layui-btn-xs layui-bg-blue">编辑</button>
+        ##<button type="button" class="layui-btn layui-btn-xs layui-bg-red">删除</button>
+        <button type="button" class="layui-btn layui-btn-xs layui-bg-orange" lay-event="syncBudgetInfoLog">查看日志</button>
+        <button class="layui-btn layui-btn-xs moreDropdown" lay-event="more">更多 <i class="layui-edge layui-edge-bottom" style="border-top-color: white;"></i></button>
+    </div>
+</script>
+
+</body>
+</html>

@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/bam.iml" filepath="$PROJECT_DIR$/bam.iml" />
+      <module fileurl="file://$PROJECT_DIR$/module1/budget.iml" filepath="$PROJECT_DIR$/module1/budget.iml" />
+      <module fileurl="file://$PROJECT_DIR$/module2/module2.iml" filepath="$PROJECT_DIR$/module2/module2.iml" />
+      <module fileurl="file://$PROJECT_DIR$/spring-boot-starter-bam/spring-boot-starter-bam.iml" filepath="$PROJECT_DIR$/spring-boot-starter-bam/spring-boot-starter-bam.iml" />
+    </modules>
+  </component>
+</project>
